@@ -1,0 +1,7 @@
+.background-image{
+    background-image:url('/assets/images/laptop.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+     height: 600px;}
