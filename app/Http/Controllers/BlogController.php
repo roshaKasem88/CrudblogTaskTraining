@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\category;
 use App\Models\post;
 use Illuminate\Http\Request;
@@ -11,8 +10,9 @@ class BlogController extends Controller
 
     public function index()
     {
-        $rows=post::with('category')->latest()->paginate(10);
-        return view('blogs.blog',compact('rows'));
+        $categories=category::all();
+        $rows=post::with('category')->where('cat_id','id')->paginate(10);
+        return view('blogs.blog',compact('rows','categories'));
     }
 
 
@@ -23,31 +23,34 @@ class BlogController extends Controller
 
 
     public function store(Request $request)
-    {try{
-        $data=[
-            'title'=>'required|string',
-            'smallDes'=>'required',
-            'Description'=>'required',
-            'image'=>'image|jpg,png,jpeg',
-            'cat_id' => 'required|exists:App\Models\category,id'
-
-        ];
-        $validated=$request->validate($data);
-        post::create([
-            'title'=>$request->title,
-            'Description'=>$request->Description,
-            'smallDes'=>$request->Description,
-            'image'=>$request->image,
-            'cat_id' => $request->cat_id,
-
-        ]);
-        return redirect()->route('blog.index')->with('status', 'Blog Created Successfully');;
-    }
-
-
+    {
+        // dd($request);
+           try{
+            $request->validate([
+                'title'=>'required',
+                'Description'=>'required',
+                'smallDes'=>$request->smallDes,
+                'image'=>$fileName,
+                'cat_id'=>$request->cat_id,
+            ]);
+            if($request->hasFile('image'))
+            {
+           $file=$request->file('image');
+           $fileName=time().'_'.$file->getClientOriginalName();
+           $file->move(public_path('images'), $fileName);
+           $blog=new post([
+           'title'=>$request->title,
+           'Description'=>$request->Description,
+           'smallDes'=>$request->smallDes,
+           'image'=>$fileName,
+           'cat_id'=>$request->cat_id,
+           ]);
+            }
+       $blog->save();
+       return redirect()->route('blog.index')->with('status', 'Blog Created Successfully');;
+        }
         catch(\Exception $e) {
             return redirect()->back()->with('Error', 'Error in Creating blog please Try again');
-
     }
 
     }
@@ -68,28 +71,25 @@ class BlogController extends Controller
     public function update(Request $request,post $post)
     {
         try{
-            $request->validate([
-                'title'=>'required|string',
-                'smallDes'=>'required',
-                'Description'=>'required',
-                'image'=>'image|jpg,png,jpeg',
-                'cat_id' => 'required|exists:App\Models\category,id'
-
-            ]);
-            $post->title=$request->title;
-            $post->Description=$request->Description;
-            $post->smallDesc=$request->smallDesc;
-            $post->Image=$request->Image;
-            $post->category_id = $request->category_id;
-            $post->save();
-            return redirect()->route('blog.index');
+            if($request->hasFile('image'))
+            {
+           $file=$request->file('image');
+           $fileName=time().'_'.$file->getClientOriginalName();
+           $file->move(public_path('images'), $fileName);
+           $blog=new post([
+           'title'=>$request->input('title'),
+           'Description'=>$request->input('Description'),
+           'smallDes'=>$request->input('smallDes'),
+           'cat_id'=>$request->cat_id,
+           'image'=>$fileName,
+           ]);
+            }
+       $blog->update();
+       return redirect()->route('blog.index')->with('status', 'Blog updated Successfully');;
         }
-
-
-            catch(\Exception $e) {
-                return redirect()->back()->with('Error', 'Error in Creating blog please Try again');
-
-        }
+        catch(\Exception $e) {
+            return redirect()->back()->with('Error', 'Error in updating blog please Try again');
+    }
     }
 
 

@@ -23,15 +23,12 @@
         <h4>Here You Can Create/Edit/Delete </h4>
     </div>
     <hr>
-    @if ($errors->any())
-        <div class="error">{{ $errors->first('Name') }}</div>
-    @endif
+
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
-
                 @endforeach
             </ul>
         </div>
@@ -47,6 +44,7 @@
                     <th>Description</th>
                     <th>Small Description</th>
                     <th>Image</th>
+                    <th>Category Name</th>
                     <th>Proccesses</th>
                 </tr>
             </thead>
@@ -57,7 +55,11 @@
                         <td>{{ $row->title }}</td>
                         <td>{{ $row->Description }}</td>
                         <td>{{ $row->smallDes }}</td>
-                        <td>{{ $row->image }}</td>
+                        <td>{{ $row->category->category_name }}</td>
+
+                        <td>
+                            <img src="./images/{{$row->image}}" width="70px" height="70px" alt="Image">
+                        </td>
                         <td>
                             <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
                                 data-target="#edit{{ $row->id }}" title="Edit"><i class="fa fa-edit"></i>
@@ -67,108 +69,156 @@
                                 <i class="fa fa-trash"></i></button>
                         </td>
                     </tr>
-                @endforeach
-                <!-- delete_modal_blog -->
-     <div class="modal fade" id="delete{{ $row->id }}" tabindex="-1"
-        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <!-- delete_modal_blog -->
+                    <div class="modal fade" id="delete{{$row->id}}" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 style="font-family: 'Cairo', sans-serif;" class="modal-title"
+                                        id="exampleModalLabel">
+                                        Delete Blog </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('blog.destroy', 'test') }}" method="post">
+                                        {{ method_field('Delete') }}
+                                        @csrf
+                                        <h6>Are You Sure you want to delete this blog?</h6>
+                                        <input id="id" type="hidden" name="id" class="form-control"
+                                            value="{{ $row->id }}">
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+</div>
+    {{-- EDIT Blog --}}
+    <div class="modal fade"  id="edit{{ $row->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 style="font-family: 'Cairo', sans-serif;"
-                        class="modal-title" id="exampleModalLabel">
-                                  Delete Blog                    </h5>
-                    <button type="button" class="close" data-dismiss="modal"
-                        aria-label="Close">
+                    <h5 style="font-family: 'Cairo', sans-serif;" class="modal-title" id="exampleModalLabel">
+                        Edit Blog </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('blog.destroy', 'test') }}"
-                        method="post">
-                        {{ method_field('Delete') }}
+                    <!-- Edit form -->
+                    <form action="{{ route('blog.update','test') }}" method="POST">
                         @csrf
-                       <h6>Are You Sure you want to delete this blog?</h6>
-                        <input id="id" type="hidden" name="id"
-                            class="form-control" value="{{ $row->id }}">
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary"
-                                data-dismiss="modal">Close</button>
-                            <button type="submit"
-                                class="btn btn-danger">Submit</button>
+                        <div class="mb-3 row">
+                            <label for="title" class="mr-sm-2">Title:</label>
+                            <input type="text" class="form-control" name="title" value="{{isset($row)?$row->title:''}}">
                         </div>
-                    </form>
-                </div>
-            </div>
-</div>
-</div>
-            </tbody>
-        </table>
-    </div>
-
-{{-- add --}}
-
-                <div class="modal fade" id="#exampleModal" tabindex="-1" role="dialog"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 style="font-family: 'Cairo', sans-serif;" class="modal-title"
-                                    id="exampleModalLabel">
-                                    Add Blog
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal"
-                                    aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- add form -->
-                                <form action="{{ route('blog.store') }}" method="POST">
-                                    @csrf
-                    <div class="row">
-                            <div class="col">
-                                <label for="title" class="mr-sm-2">Title:</label>
-                                <input type="text" class="form-control" name="title">
-                            </div>
-
-                        <div class="col">
+                        <div class="mb-3 row">
                             <label for="Description" class="mr-sm-2">Description
                                 :</label>
-                            <textarea class="form-control" name="Description" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            <textarea class="form-control" value="{{isset($row)?$row->Description:''}}" name="Description" id="exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
-                    <div class="col">
-                            <label for="exampleFormControlTextarea1">Small Description
+                        <div class="mb-3 row">
+                            <label for="exampleFormControlTextarea1" class="mr-sm-2">Small Description
                                 :</label>
-                            <input type="text" class="form-control" name="smallDes">
+                            <input type="text" class="form-control" name="smallDes"  value="{{isset($row)?$row->smallDes:''}}">
                         </div>
 
-                    <div class="col">
-                        <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Choose Category</label>
+                        <div class="mb-3 row">
+                            <label for="inlineFormCustomSelectPref" class="mr-sm-2">Choose Category</label>
+                            <select name="" class="form-control" onchange="console.log($(this).val())" required>
+                                @foreach ($categories as $category)
+                                <option value="{{$category->cat_id}}" >
+                                    {{$category->category_name}}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3 row">
+                            <input type="file" name="image" class="dropify" accept=".pdf,.jpg, .png, image/jpeg, image/png">
+                            <button type="submit">Upload</button>
+                            </div>
+                        </div>
 
-                        <select name="" id="" class="form-control" required>
-                            <option value="" selected disabled> ---Choose Category--</option>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">Edit Data</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </tbody>
+</table>
+</div>
+
+{{-- add --}}
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 style="font-family: 'Cairo', sans-serif;" class="modal-title" id="exampleModalLabel">
+                    Add Blog </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- add form -->
+                <form action="{{ route('blog.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3 row">
+                        <label for="title" class="mr-sm-2">Title:</label>
+                        <input type="text" class="form-control" name="title">
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="Description" class="mr-sm-2">Description
+                            :</label>
+                        <textarea class="form-control" name="Description" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="exampleFormControlTextarea1" class="mr-sm-2">Small Description
+                            :</label>
+                        <input type="text" class="form-control" name="smallDes">
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="inlineFormCustomSelectPref" class="mr-sm-2">Choose Category</label>
+                        <select name="cat_id" class="form-control" selected required>
+                            @foreach ($categories as $category)
+                            <option value="{{$category->cat_id}}" selected>
+                                {{$category->category_name}}
+                            </option>
+                            @endforeach
                         </select>
                     </div>
-                    <div class="col">
-                        <div class="custom-file">
-                            <input required type="file" class="custom-file-input" onchange="id_proof(event, this.id)"
-                                id="customFile" name="customFile" />
-                            <label class="custom-file-label" for="customFile" id="customFiles">Choose file</label>
-                            <small id="upload_msg" class="form-text" style="display: none;">
+                    <div class="mb-3 row">
+                        <input type="file" name="image">
+                        <button type="submit">Upload</button>
                         </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
                     </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary"
-                data-dismiss="modal">Close</button>
-            <button type="submit"
-                class="btn btn-success">Submit</button>
-        </div>
-    </form>
-</div>   </div>   </div>
 
-
+                </form>
+            </div>
     </div>
-    <!-- row closed -->
+</div>
+</div></div>
+</div>
+<!-- row closed -->
 @endsection
 @section('js')
 

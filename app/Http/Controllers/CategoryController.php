@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\category;
+use App\Models\post;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -18,17 +18,18 @@ class CategoryController extends Controller
     }
 
     public function store(Request $request)
-    {try{
-        $data=[
+    {
+        try{
+        $request->validate([
             'category_name'=>'required|string',
-        ];
-        $validated=$request->validate($data);
+        ]);
         category::create([
         'category_name'=>$request->category_name,
+        'cat_id'=>$request->cat_id,
+
         ]);
         return redirect()->route('category.index');}
-        catch
-        (\Exception $e) {
+        catch(\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
@@ -49,14 +50,15 @@ class CategoryController extends Controller
     public function update(Request $request)
     {
     try{
-        $data=[
+        $request->validate([
             'category_name'=>'required|string',
-        ];
-        $row=category::findOrFail($request->cat_id);
-        $validated=$request->validate($data);
-        category::create([
+        ]);
+
+        $row =category::with('post')->FindOrFail($request->cat_id);
+        $row->Update([
         'category_name'=>$request->category_name,
         ]);
+
         return redirect()->route('category.index');}
         catch(\Exception $e) {
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
@@ -66,8 +68,8 @@ class CategoryController extends Controller
 
     public function destroy(Request $request)
     {
-
-    category::findOrFail($request->cat_id)->delete();
+        $row =category::with('post')->FindOrFail($request->cat_id);
+    $row->delete();
     return redirect()->route('category.index');
     }
 }

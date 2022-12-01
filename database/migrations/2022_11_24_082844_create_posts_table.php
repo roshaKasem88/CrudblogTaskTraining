@@ -6,16 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-
     public function up()
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('Description');
-            $table->text('smallDes');
+            $table->text('smallDes')->nullable();
             $table->string('image')->nullable();
-            $table->foreignId('cat_id')->constrained();
+            $table->foreignId('cat_id')->constraint('categories')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,4 +25,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('posts');
     }
+
 };
