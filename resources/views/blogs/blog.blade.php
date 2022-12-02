@@ -55,17 +55,18 @@
                         <td>{{ $row->title }}</td>
                         <td>{{ $row->Description }}</td>
                         <td>{{ $row->smallDes }}</td>
-                        <td>{{ $row->category->category_name }}</td>
 
                         <td>
                             <img src="./images/{{$row->image}}" width="70px" height="70px" alt="Image">
                         </td>
+                        <td>{{$row->cat_id}}</td>
+
                         <td>
                             <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                data-target="#edit{{ $row->id }}" title="Edit"><i class="fa fa-edit"></i>
+                                data-target="#edit{{ $row->id}}" title="Edit"><i class="fa fa-edit"></i>
                             </button>
                             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                data-target="#delete{{ $row->id }}" title="Delete">
+                                data-target="#delete{{ $row->id}}" title="Delete">
                                 <i class="fa fa-trash"></i></button>
                         </td>
                     </tr>
@@ -116,6 +117,7 @@
                     <!-- Edit form -->
                     <form action="{{ route('blog.update','test') }}" method="POST">
                         @csrf
+                        @method('patch')
                         <div class="mb-3 row">
                             <label for="title" class="mr-sm-2">Title:</label>
                             <input type="text" class="form-control" name="title" value="{{isset($row)?$row->title:''}}">
@@ -135,8 +137,8 @@
                             <label for="inlineFormCustomSelectPref" class="mr-sm-2">Choose Category</label>
                             <select name="" class="form-control" onchange="console.log($(this).val())" required>
                                 @foreach ($categories as $category)
-                                <option value="{{$category->cat_id}}" >
-                                    {{$category->category_name}}
+                                <option value="{{$category->id}}" >
+                                    {{$category->name}}
                                 </option>
                                 @endforeach
                             </select>
@@ -159,6 +161,7 @@
         @endforeach
     </tbody>
 </table>
+</div>
 </div>
 
 {{-- add --}}
@@ -194,10 +197,10 @@
 
                     <div class="mb-3 row">
                         <label for="inlineFormCustomSelectPref" class="mr-sm-2">Choose Category</label>
-                        <select name="cat_id" class="form-control" selected required>
+                        <select name="id" class="form-control" selected required>
                             @foreach ($categories as $category)
-                            <option value="{{$category->cat_id}}" selected>
-                                {{$category->category_name}}
+                            <option value="{{$category->id}}" selected>
+                                {{$category->name}}
                             </option>
                             @endforeach
                         </select>

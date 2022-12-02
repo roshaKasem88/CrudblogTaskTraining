@@ -21,11 +21,11 @@ class CategoryController extends Controller
     {
         try{
         $request->validate([
-            'category_name'=>'required|string',
+            'name'=>'required|string',
         ]);
         category::create([
-        'category_name'=>$request->category_name,
-        'cat_id'=>$request->cat_id,
+        'name'=>$request->name,
+        'id'=>$request->id,
 
         ]);
         return redirect()->route('category.index');}
@@ -51,12 +51,12 @@ class CategoryController extends Controller
     {
     try{
         $request->validate([
-            'category_name'=>'required|string',
+            'name'=>'required|string',
         ]);
 
-        $row =category::with('post')->FindOrFail($request->cat_id);
+        $row =category::with('post')->FindOrFail($request->id);
         $row->Update([
-        'category_name'=>$request->category_name,
+        'name'=>$request->name,
         ]);
 
         return redirect()->route('category.index');}
@@ -68,7 +68,7 @@ class CategoryController extends Controller
 
     public function destroy(Request $request)
     {
-        $row =category::with('post')->FindOrFail($request->cat_id);
+        $row =category::with('post')->FindOrFail($request->id);
     $row->delete();
     return redirect()->route('category.index');
     }

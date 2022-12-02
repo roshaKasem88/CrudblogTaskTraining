@@ -2,7 +2,7 @@
 @section('css')
 
 @section('title')
-    empty
+Categories
 @stop
 @section('page-header')
 
@@ -45,18 +45,18 @@
                 @foreach ($categories as $category)
                     <tr>
                         <td> {{ $loop->iteration }}</td>
-                        <td>{{ $category->category_name }}</td>
+                        <td>{{ $category->name }}</td>
                         <td>
                             <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                data-target="#edit{{ $category->cat_id }}" title="Edit"><i class="fa fa-edit"></i>
+                                data-target="#edit{{ $category->id }}" title="Edit"><i class="fa fa-edit"></i>
                             </button>
                             <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
-                                data-target="#delete{{ $category->cat_id }}" title="Delete">
+                                data-target="#delete{{ $category->id }}" title="Delete">
                                 <i class="fa fa-trash"></i></button>
                         </td>
                     </tr>
  <!-- delete_modal_blog -->
- <div class="modal fade" id="delete{{ $category->cat_id }}" tabindex="-1" role="dialog"
+ <div class="modal fade" id="delete{{ $category->id }}" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -69,12 +69,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('category.destroy', $category->cat_id) }}" method="post">
+                <form action="{{ route('category.destroy','test') }}" method="post">
                     {{ method_field('Delete') }}
                     @csrf
                     <h6>Are You Sure you want to delete this category?</h6>
-                    <input id="cat_id" type="hidden" name="cat_id" class="form-control"
-                        value="{{ $category->cat_id }}">
+                    <input id="cat_id" type="hidden" name="id" class="form-control"
+                        value="{{ $category->id }}">
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
                             data-dismiss="modal">Close</button>
@@ -87,7 +87,7 @@
 </div>
 </div>
 <!-- edit_modal_category -->
-<div class="modal fade" id="edit{{$category->cat_id}}" tabindex="-1" role="dialog"
+<div class="modal fade" id="edit{{$category->id}}" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -109,9 +109,9 @@
                     <div class="row">
                         <div class="col">
                                 <label for="title" class="mr-sm-2">Category Name:</label>
-                                <input type="text" class="form-control" value="{{old('category_name')}}" name="category_name">
-                                <input  type="hidden" name="cat_id"
-                                class="form-control" value="{{ $category->cat_id}}">
+                                <input type="text" class="form-control" value="{{old('name')}}" name="name">
+                                <input  type="hidden" name="id"
+                                class="form-control" value="{{ $category->id}}">
                             </div>
                         </div>
                         <div class="row">
@@ -127,7 +127,7 @@
          </div> </div>
 
                  <!-- delete_modal_Grade -->
-                 <div class="modal fade" id="delete{{$category->cat_id}}" tabindex="-1"
+                 <div class="modal fade" id="delete{{$category->id}}" tabindex="-1"
                     role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -148,7 +148,7 @@
                                     @csrf
                                    <h6>Are You Sure You want to delete this category?</h6>
                                     <input id="id" type="hidden" name="cat_id"
-                                        class="form-control" value="{{ $category->cat_id }}">
+                                        class="form-control" value="{{ $category->id }}">
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-dismiss="modal">Close</button>
@@ -184,7 +184,7 @@
                         <div class="row">
                                 <div class="col">
                                     <label for="title" class="mr-sm-2">Category Name:</label>
-                                    <input type="text" class="form-control" name="category_name">
+                                    <input type="text" class="form-control" name="name">
                                 </div>
                             </div>
                             <div class="row">

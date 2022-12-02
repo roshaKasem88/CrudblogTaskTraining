@@ -11,7 +11,7 @@ class BlogController extends Controller
     public function index()
     {
         $categories=category::all();
-        $rows=post::with('category')->where('cat_id','id')->paginate(10);
+        $rows=post::with('category')->get();
         return view('blogs.blog',compact('rows','categories'));
     }
 
@@ -29,10 +29,8 @@ class BlogController extends Controller
             $request->validate([
                 'title'=>'required',
                 'Description'=>'required',
-                'smallDes'=>$request->smallDes,
-                'image'=>$fileName,
-                'cat_id'=>$request->cat_id,
-            ]);
+                'smallDes'=>'required',
+                'image'=>'required|image|mimes:jpg'  ]);
             if($request->hasFile('image'))
             {
            $file=$request->file('image');
@@ -43,7 +41,7 @@ class BlogController extends Controller
            'Description'=>$request->Description,
            'smallDes'=>$request->smallDes,
            'image'=>$fileName,
-           'cat_id'=>$request->cat_id,
+           'cat_id'=>$request->id,
            ]);
             }
        $blog->save();
@@ -68,24 +66,31 @@ class BlogController extends Controller
     }
 
 
-    public function update(Request $request,post $post)
+    public function update(Request $request)
     {
         try{
+            $request->validate([
+                'title'=>'required',
+                'Description'=>'required',
+                'smallDes'=>'required',
+                'image'=>'required|image|mimes:jpg'  ]);
             if($request->hasFile('image'))
             {
            $file=$request->file('image');
            $fileName=time().'_'.$file->getClientOriginalName();
            $file->move(public_path('images'), $fileName);
            $blog=new post([
-           'title'=>$request->input('title'),
-           'Description'=>$request->input('Description'),
-           'smallDes'=>$request->input('smallDes'),
-           'cat_id'=>$request->cat_id,
+           'title'=>$request->title,
+           'Description'=>$request->Description,
+           'smallDes'=>$request->smallDes,
            'image'=>$fileName,
+           'cat_id'=>$request->id,
            ]);
+
             }
-       $blog->update();
-       return redirect()->route('blog.index')->with('status', 'Blog updated Successfully');;
+            $blog->update();
+
+       return redirect()->route('blog.index')->with('status', 'Blog updated Successfully');
         }
         catch(\Exception $e) {
             return redirect()->back()->with('Error', 'Error in updating blog please Try again');
@@ -96,7 +101,7 @@ class BlogController extends Controller
     public function destroy(Request $request)
     {
 
-    $row=post::findOrFail($request->id)->delete();
-    return redirect()->route('blog.index',compact('row'));
+    post::findOrFail($request->id)->delete();
+    return redirect()->route('blog.index');
     }
 }
